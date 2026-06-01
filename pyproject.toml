@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "precorrect"
+version = "0.1.0"
+description = "A generation-time correction layer for LLMs — debias before you generate, not after."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+keywords = ["llm", "bias", "correction", "rag", "ai", "guardrails"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = []          # zero hard deps; pyyaml is optional for .yaml rule files
+optional-dependencies = { yaml = ["pyyaml>=6"] }
+
+[project.urls]
+Repository = "https://github.com/OWNER/precorrect"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["precorrect*"]

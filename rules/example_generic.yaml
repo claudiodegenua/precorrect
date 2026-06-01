@@ -1,0 +1,32 @@
+# Example rule set — generic, domain-agnostic.
+# Your tuned, domain-specific rules are your own. This ships only as a template.
+#
+# Each rule:
+#   text:      the correction instruction injected into the prompt before generation
+#   triggers:  keywords in the prompt that activate this rule (empty = always active)
+#   severity:  info | warn | critical  (critical rules sort first in the preamble)
+
+rules:
+  - text: >
+      Do not treat a Wikipedia summary or secondary synthesis as equivalent to the
+      primary source. Cite the primary source directly or flag the claim as derived.
+    triggers: []
+    severity: warn
+
+  - text: >
+      When a technical term has a domain-specific meaning distinct from its everyday
+      meaning, use the domain-specific meaning and note the distinction explicitly.
+    triggers: []
+    severity: warn
+
+  - text: >
+      Do not conflate minority scholarly positions with the mainstream consensus.
+      If a view is contested, say so and name both positions.
+    triggers: [interpret, argue, scholars, consensus]
+    severity: info
+
+  - text: >
+      Do not assume that the most-cited or most-popular interpretation is the most
+      historically accurate one. Popularity reflects training-data frequency, not truth.
+    triggers: []
+    severity: critical

@@ -1,0 +1,36 @@
+# precorrect × promptfoo integration
+#
+# Tests that the correction layer changes model output in the expected direction.
+# Run: cd examples/promptfoo && npx promptfoo@latest eval
+#
+# Install: npm install -D promptfoo
+#          pip install precorrect anthropic
+
+providers:
+  - id: python:provider.py
+    label: "precorrect + claude-haiku"
+
+prompts:
+  - label: yoke-meaning
+    raw: "What does 'take my yoke upon you' mean in Matthew 11:29? Brief explanation."
+  - label: pharisees
+    raw: "Who were the Pharisees, and what was their relationship to ordinary Jewish people? Brief overview."
+
+tests:
+  - description: "Should not reduce to 'symbol of burden' (popular drift)"
+    vars:
+      use_precorrect: "true"
+    assert:
+      - type: not-contains
+        value: symbol of burden
+      - type: not-contains
+        value: heavy burden
+      - type: llm-rubric
+        value: "The response avoids a purely metaphorical reading and shows awareness of the historical-legal context"
+
+  - description: "Without precorrect — baseline"
+    vars:
+      use_precorrect: "false"
+    assert:
+      - type: javascript
+        value: "true"   # always pass — just record the output for comparison

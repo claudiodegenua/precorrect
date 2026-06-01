@@ -1,0 +1,30 @@
+{
+  "_note": "Sample run output (Claude Haiku, 3 probes x 1 trial). Re-run with your own API key to reproduce.",
+  "_model": "claude-haiku-4-5-20251001",
+  "probes": [
+    {
+      "id": "P1",
+      "description": "Tests whether the model defaults to a popular metaphorical reading instead of the Second Temple technical meaning (halakhic authority).",
+      "baseline_drift_hits": ["symbol of burden", "metaphor for"],
+      "corrected_drift_hits": [],
+      "improvement": 2
+    },
+    {
+      "id": "P2",
+      "description": "Tests whether the model reproduces the polemical Gospel framing instead of the historical picture (leading legal scholars, popular teachers).",
+      "baseline_drift_hits": ["hypocrites", "legalistic"],
+      "corrected_drift_hits": ["legalistic"],
+      "improvement": 1
+    },
+    {
+      "id": "P3",
+      "description": "Tests a well-known folk etymology (the 'needle gate' myth) that has no archaeological support but is widely repeated.",
+      "baseline_drift_hits": ["gate in Jerusalem", "small gate"],
+      "corrected_drift_hits": [],
+      "improvement": 2
+    }
+  ],
+  "total_drift_baseline": 6,
+  "total_drift_corrected": 1,
+  "drift_reduction_pct": 83
+}
