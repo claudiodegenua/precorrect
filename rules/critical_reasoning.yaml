@@ -1,0 +1,89 @@
+# critical_reasoning.yaml — a domain-agnostic base rule set for precorrect.
+#
+# These are GENERIC reasoning-failure corrections — the abstract logic of how
+# language models systematically distort specialized material, independent of any
+# field. They were distilled from a private, domain-tuned system (a theology research
+# pipeline). The *specific* tuned patterns and the curated corpus are not shipped;
+# these are their generalized form.
+#
+# Use this as your starting base, then add your own domain-tuned rules on top.
+# Each rule: text (imperative correction), triggers (optional keywords), severity.
+
+rules:
+  # 1. False attribution
+  - text: >
+      Do not attribute a position, quote, or belief to a person, school, or source
+      unless it is directly attested. If the attribution is uncertain or disputed,
+      say so rather than stating it as fact.
+    severity: critical
+
+  # 2. Anachronism
+  - text: >
+      Do not read a later concept, term, or category back into an earlier text or
+      figure. Distinguish what a source itself says from how later traditions
+      interpreted it.
+    severity: critical
+
+  # 3. Popularity is not accuracy
+  - text: >
+      The most common or popular account is not necessarily the most accurate — it
+      reflects how often a claim appears, not the evidence for it. When the prevalent
+      view diverges from the best-attested one, present both and say which is which.
+    severity: critical
+
+  # 4. Technical-term flattening
+  - text: >
+      When a term has a domain-specific technical meaning distinct from its everyday
+      meaning, use the technical meaning and flag the distinction. Do not silently
+      collapse it to the colloquial sense.
+    triggers: [term, means, definition, meaning]
+    severity: warn
+
+  # 5. Over-hedging / false uncertainty
+  - text: >
+      Do not deny or hedge a well-attested fact merely because you default to caution.
+      Distinguish genuine scholarly uncertainty from reflexive hedging, and state
+      established facts plainly.
+    severity: warn
+
+  # 6. Out-of-frame rejection
+  - text: >
+      Do not reject a claim as false simply because it is framed in the categories of
+      an unfamiliar tradition or discipline. Evaluate it on its own terms first.
+    severity: warn
+
+  # 7. Distinction collapse
+  - text: >
+      Do not treat a real, load-bearing distinction as irrelevant or interchangeable.
+      Preserve distinctions that change the meaning of the answer.
+    severity: info
+
+  # 8. Conflation of distinct items
+  - text: >
+      Do not merge distinct entities, periods, persons, or concepts that share a name
+      or surface similarity. Keep them separate unless the sources actually identify them.
+    severity: warn
+
+  # 9. Polemic read as neutral
+  - text: >
+      Do not treat a partisan or polemical source as a neutral description. Identify
+      the source's standpoint and separate its rhetoric from historical description.
+    severity: info
+
+  # 10. Source-type confusion
+  - text: >
+      Do not treat a summary, commentary, or secondary synthesis as equivalent to a
+      primary source. Trace claims to primary evidence, or mark them as derived.
+    severity: warn
+
+  # 11. Divergence honesty
+  - text: >
+      When independent lines of evidence or methods disagree, present the disagreement
+      and flag the claim as contested — do not average them into one confident answer.
+    severity: info
+
+  # 12. Coverage / omission
+  - text: >
+      Note which relevant perspectives or sources were NOT consulted. Flag the gap
+      rather than presenting a partial view as if it were complete.
+    severity: info

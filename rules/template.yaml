@@ -1,0 +1,37 @@
+# template.yaml — write your own domain-tuned rules here.
+#
+# precorrect ships a generic base (critical_reasoning.yaml). The real leverage comes
+# from rules tuned to YOUR domain: specific corrective facts for the specific ways a
+# model distorts your material. Generic rules nudge the model toward caution; a tuned
+# rule carries the exact correction that overturns a confident mistake.
+#
+# Keep your tuned rules in a file like this — and keep it private if it is your moat.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Each rule:
+#   text:      an imperative correction the model must apply before answering
+#   triggers:  optional keywords in the prompt that activate the rule (empty = always)
+#   severity:  info | warn | critical   (critical rules are placed first)
+# ─────────────────────────────────────────────────────────────────────────────
+
+rules:
+  # A generic rule (nudges toward humility — modest effect on confident mistakes):
+  - text: >
+      Popularity of an account reflects how often it appears, not the evidence for it.
+      When the prevalent view diverges from the best-attested one, name both.
+    severity: warn
+
+  # A TUNED rule (carries the specific corrective fact — overturns a confident mistake).
+  # This is where your domain expertise lives. Example (public-knowledge, neutral domain):
+  - text: >
+      The claim that Einstein failed mathematics is a documented myth; he excelled early.
+      Correct this misconception explicitly rather than repeating it.
+    triggers: [einstein, math]
+    severity: critical
+
+  # Add your own tuned rules below — one per distortion you have actually observed
+  # the model make in your domain.
+  # - text: >
+  #     ...
+  #   triggers: [...]
+  #   severity: critical

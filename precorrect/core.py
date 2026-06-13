@@ -25,6 +25,7 @@ class Rule:
     text: str
     triggers: list[str] = field(default_factory=list)  # keywords; empty = always apply
     severity: str = "info"  # info | warn | critical (controls ordering/emphasis)
+    cluster: str = ""  # optional reasoning-failure cluster from discover() (12 generic clusters)
 
     def applies_to(self, prompt: str) -> bool:
         if not self.triggers:
@@ -47,13 +48,15 @@ class RuleSet:
                 out.append(Rule(text=it))
             elif isinstance(it, dict) and it.get("text"):
                 out.append(
-                    Rule(text=it["text"], triggers=it.get("triggers", []), severity=it.get("severity", "info"))
+                    Rule(text=it["text"], triggers=it.get("triggers", []),
+                         severity=it.get("severity", "info"), cluster=it.get("cluster", ""))
                 )
         return cls(out)
 
     @classmethod
     def from_file(cls, path: str) -> "RuleSet":
-        raw = open(path, encoding="utf-8").read()
+        with open(path, encoding="utf-8") as f:
+            raw = f.read()
         if path.endswith((".yaml", ".yml")):
             try:
                 import yaml  # optional dependency
@@ -106,6 +109,31 @@ class PreCorrect:
         """Inject the applicable rules ahead of the prompt, then generate."""
         applicable = rules.applicable(prompt) if rules else []
         return self.complete(self.build_preamble(applicable) + prompt)
+
+    def generate_gated(self, prompt: str, rules: "RuleSet | None" = None,
+                       probe_n: int = 3, consistency_threshold: float = 7.0) -> str:
+        """Conditional injection: inject rules ONLY where the model is internally inconsistent.
+
+        Self-consistency (agreement across `probe_n` bare samples) is a no-answer-key proxy for
+        drift/weakness. Stable prompts return the bare answer (no injection noise); drift-prone
+        prompts get the corrections. Empirically ~matches always-injecting quality at a fraction of
+        the injections, with lower variance — injecting on already-solid prompts mostly adds noise.
+        """
+        if not rules:
+            return self.complete(prompt)
+        samples = [self.complete(prompt) for _ in range(max(2, probe_n))]
+        if self._consistency(prompt, samples) >= consistency_threshold:
+            return samples[0]
+        return self.generate(prompt, rules)
+
+    def _consistency(self, prompt: str, samples: Sequence[str]) -> float:
+        listing = "\n\n".join(f"[{i + 1}] {s}" for i, s in enumerate(samples))
+        q = ("How CONSISTENT are these answers to the same question with each other? "
+             "0 = they contradict, 10 = they say the same thing. Reply with ONLY a number.\n\n"
+             f"Question: {prompt}\n\nAnswers:\n{listing}")
+        # anchor to a valid 0-10 score (avoid grabbing a stray number from a preamble)
+        m = re.search(r"\b(10(?:\.0+)?|[0-9](?:\.\d+)?)\b", self.complete(q) or "")
+        return float(m.group(1)) if m else 0.0
 
     def discover(self, topic: str, n: int = 6) -> RuleSet:
         """Use the model to self-surface likely biases on a topic → candidate rules.
